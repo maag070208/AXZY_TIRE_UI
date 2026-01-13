@@ -1,15 +1,17 @@
 import { Column, ITButton, ITTable } from "axzy_ui_system";
-import { FaCalendarPlus, FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaCalendarPlus, FaPencilAlt, FaTrash, FaChartLine } from "react-icons/fa";
 
 interface ChildrenTableProps {
   data: any[];
   onRowClick: (rowData: any) => void;
   onRowDelete: (rowData: any) => void;
   onAssignTraining: (rowData: any) => void;
+  onViewReports: (rowData: any) => void;
 }
 
-const ChildrenTable = ({ data, onRowClick, onRowDelete, onAssignTraining }: ChildrenTableProps) => {
+const ChildrenTable = ({ data, onRowClick, onRowDelete, onAssignTraining, onViewReports }: ChildrenTableProps) => {
   const actions = (row: any) => {
+    // console.log("Rendering actions for child:", row.name);
     const hasAppointment = row.appointments && row.appointments.length > 0;
 
     return (
@@ -37,6 +39,15 @@ const ChildrenTable = ({ data, onRowClick, onRowDelete, onAssignTraining }: Chil
           title="Editar"
         >
           <FaPencilAlt />
+        </ITButton>
+        <ITButton
+            color="success"
+            variant="outlined"
+            onClick={() => onViewReports(row)}
+            className="min-w-0 p-2"
+            title="Ver Reportes"
+        >
+            <FaChartLine />
         </ITButton>
         <ITButton
           color="danger"

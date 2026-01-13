@@ -73,7 +73,6 @@ const PaymentsPage = () => {
                         value={selectedCoachId}
                         onChange={(e) => setSelectedCoachId(e.target.value)}
                         options={[
-                            { label: "Todos los Entrenadores", value: "" },
                             ...coaches.map(c => ({ label: `${c.name} ${c.lastName}`, value: String(c.id) }))
                         ]}
                      />

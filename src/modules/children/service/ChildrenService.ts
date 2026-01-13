@@ -24,6 +24,10 @@ export const deleteChild = async (id: number): Promise<TResult<any>> => {
   return await remove(`/children/${id}`);
 };
 
+export const getChildById = async (id: number): Promise<TResult<Children>> => {
+  return await get(`/children/${id}`);
+};
+
 export const updateChild = async (
   id: number,
   data: ChildrenUpdate

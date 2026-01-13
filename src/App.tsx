@@ -14,6 +14,7 @@ import ChildrenPage from "./modules/children/pages/ChildrenPage";
 import AppointmentsPage from "./modules/appointments/pages/AppointmentsPage";
 import CalendarPage from "./modules/calendar/pages/CalendarPage";
 import PaymentsPage from "./modules/payments/pages/PaymentsPage";
+import EvaluationFormPage from "./modules/evaluations/pages/EvaluationFormPage";
 
 
 function App() {
@@ -77,6 +78,7 @@ function App() {
         <Route path="/appointments" element={<AppointmentsPage />} />
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
+        <Route path="/evaluations/new" element={<EvaluationFormPage />} />
 
       </Route>
       <Route path="*" element={<Navigate to="/home" />} />

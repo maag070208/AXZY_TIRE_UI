@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "@app/core/store/store";
 import { assignChildToTrainingMode, getChildByUserId, getAllChildren } from "../../children/service/ChildrenService";
 import { showToast } from "@app/core/store/toast/toast.slice";
+import { useNavigate } from "react-router-dom";
 
 interface CalendarEvent {
   id: string;
@@ -23,6 +24,7 @@ interface CalendarEvent {
 const CalendarPage = () => {
     const user = useSelector((state: AppState) => state.auth);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [trainingModes, setTrainingModes] = useState<any[]>([]);
     const [daySchedules, setDaySchedules] = useState<any[]>([]);
@@ -333,16 +335,28 @@ const CalendarPage = () => {
                                         {visibleAppointments.map((appt: any) => (
                                             <li key={appt.id} className="flex items-center justify-between bg-gray-50 p-2 rounded">
                                                 <span>- {appt.child?.name} {appt.child?.lastName}</span>
-                                                {/* Only Admin or Parent (for their own kid) can delete. Coach CANNOT. */}
-                                                {!isCoach && (
-                                                    <button 
-                                                        onClick={() => handleUnenroll(appt.id)}
-                                                        className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-colors"
-                                                        title="Dar de baja"
-                                                    >
-                                                        <FaTrash size={12} />
-                                                    </button>
-                                                )}
+                                                <div className="flex gap-2">
+                                                    {isCoach && (
+                                                        <ITButton 
+                                                            label="Evaluar"
+                                                            color="success"
+                                                            onClick={() => {
+                                                                // window.location.href = `/evaluations/new?childId=${appt.child.id}`;
+                                                                navigate(`/evaluations/new?childId=${appt.child.id}`);
+                                                            }}
+                                                        />
+                                                    )}
+                                                    {/* Only Admin or Parent (for their own kid) can delete. Coach CANNOT. */}
+                                                    {!isCoach && (
+                                                        <button 
+                                                            onClick={() => handleUnenroll(appt.id)}
+                                                            className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-colors"
+                                                            title="Dar de baja"
+                                                        >
+                                                            <FaTrash size={12} />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </li>
                                         ))}
                                     </ul>

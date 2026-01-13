@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import AssignScheduleForm from "../components/AssignScheduleForm";
 import ChildForm from "../components/ChildForm";
 import ChildrenTable from "../components/ChildrenTable";
+import EvaluationsList from "../components/EvaluationsList";
 import {
   assignChildToTrainingMode,
   createChild,
@@ -23,6 +24,7 @@ const ChildrenPage = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showReportsModal, setShowReportsModal] = useState(false);
   
   const [selectedChild, setSelectedChild] = useState<any | null>(null);
 
@@ -141,6 +143,10 @@ const ChildrenPage = () => {
             setSelectedChild(child);
             setShowAssignModal(true);
         }}
+        onViewReports={(child) => {
+            setSelectedChild(child);
+            setShowReportsModal(true);
+        }}
       />
 
       {/* CREATE / EDIT MODAL */}
@@ -195,6 +201,18 @@ const ChildrenPage = () => {
                 />
             </div>
         </div>
+      </ITDialog>
+
+      <ITDialog
+        isOpen={showReportsModal}
+        onClose={() => {
+            setShowReportsModal(false);
+            setSelectedChild(null);
+        }}
+        title={`Reportes de Evaluación - ${selectedChild?.name || ""}`}
+        className="w-full max-w-2xl"
+      >
+          {selectedChild && <EvaluationsList childId={selectedChild.id} />}
       </ITDialog>
 
     </div>

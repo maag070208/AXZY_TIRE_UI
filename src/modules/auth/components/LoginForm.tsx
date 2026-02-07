@@ -47,9 +47,15 @@ const LoginFormComponent = ({
       column: 12,
       validation: Yup.string().required("Este campo es requerido"),
       rightIcon: !showPassword ? (
-        <FaLock onClick={() => setShowPassword(!showPassword)} />
+        <FaLock
+          className="cursor-pointer pointer-events-auto"
+          onClick={() => setShowPassword(!showPassword)}
+        />
       ) : (
-        <FaLockOpen onClick={() => setShowPassword(!showPassword)} />
+        <FaLockOpen
+          className="cursor-pointer pointer-events-auto"
+          onClick={() => setShowPassword(!showPassword)}
+        />
       ),
     },
   ];

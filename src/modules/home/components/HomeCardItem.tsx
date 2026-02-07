@@ -1,21 +1,29 @@
-import { ITCard } from "axzy_ui_system";
+import { FaArrowRight } from "react-icons/fa";
 
 export const HomeCardItem = ({ item, index }: any) => {
   return (
-    <ITCard
+    <div
       onClick={item.action}
-      className="bg-gray-200 border-gray-300 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 rounded-lg"
-      contentClassName="h-full flex items-center hover:bg-gray-100 cursor-pointer p-6 min-h-[80px]"
+      className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group flex flex-col justify-between h-full"
       key={index}
     >
-      <div className="flex items-center space-x-4 w-full">
-        {/* Orange circular icon container */}
-        <div className="bg-teal-500 rounded-full p-3 flex items-center justify-center flex-shrink-0 w-12 h-12">
-          {item.icon && <div className="text-2xl">{item.icon}</div>}
+      <div className="flex items-start justify-between mb-4">
+        <div className="bg-indigo-50 text-indigo-600 rounded-2xl p-4 flex items-center justify-center w-14 h-14 transition-colors group-hover:bg-indigo-600 group-hover:text-white">
+          <div className="text-2xl">{item.icon}</div>
         </div>
-        {/* Cyan text for module name to match sidebar */}
-        <p className="text-xl font-medium text-black-400 flex-1">{item.title}</p>
+        <div className="bg-gray-50 rounded-full p-2 text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+            <FaArrowRight className="transform -rotate-45 group-hover:rotate-0 transition-transform duration-300" />
+        </div>
       </div>
-    </ITCard>
+      
+      <div>
+        <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-indigo-600 transition-colors">
+            {item.title}
+        </h3>
+        <p className="text-sm text-gray-500 leading-relaxed">
+            {item.description}
+        </p>
+      </div>
+    </div>
   );
 };

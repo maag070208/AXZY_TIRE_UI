@@ -24,6 +24,11 @@ export interface Appointment {
     id: number;
     name: string;
   };
+  user?: {
+    id: number;
+    name: string;
+    lastName: string;
+  };
 }
 
 export const getAllAppointments = async (): Promise<TResult<Appointment[]>> => {

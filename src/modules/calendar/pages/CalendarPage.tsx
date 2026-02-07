@@ -1,16 +1,16 @@
-import { ITCalendar, ITSelect, ITLoader, ITDialog, ITButton } from "axzy_ui_system";
+import { AppState } from "@app/core/store/store";
+import { showToast } from "@app/core/store/toast/toast.slice";
+import { ITButton, ITCalendar, ITDialog, ITLoader, ITSelect } from "axzy_ui_system";
 import { format, parseISO } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { FaCalendarAlt, FaTrash } from "react-icons/fa";
-import { getAllTrainingModes } from "../../traningMode/services/TrainingModeService";
-import { getAllDaySchedules, createDaySchedule, deleteDaySchedule } from "../../daySchedules/services/DayScheduleService";
-import { deleteAppointment } from "../../appointments/service/AppointmentService";
-import { getCoaches, User as CoachUser } from "../../users/services/UserService";
-import { useSelector, useDispatch } from "react-redux";
-import { AppState } from "@app/core/store/store";
-import { assignChildToTrainingMode, getChildByUserId, getAllChildren } from "../../children/service/ChildrenService";
-import { showToast } from "@app/core/store/toast/toast.slice";
+import { FaTrash } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { deleteAppointment } from "../../appointments/service/AppointmentService";
+import { assignChildToTrainingMode, getAllChildren, getChildByUserId } from "../../children/service/ChildrenService";
+import { createDaySchedule, deleteDaySchedule, getAllDaySchedules } from "../../daySchedules/services/DayScheduleService";
+import { getAllTrainingModes } from "../../traningMode/services/TrainingModeService";
+import { User as CoachUser, getCoaches } from "../../users/services/UserService";
 
 interface CalendarEvent {
   id: string;
@@ -247,16 +247,10 @@ const CalendarPage = () => {
 
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 p-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+        <div className="flex flex-col h-full bg-gray-50">
+             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 py-4 bg-gray-50">
                 <div className="flex items-center gap-3">
-                    <div className="bg-blue-600 p-3 rounded-lg shadow-blue-200 shadow-lg">
-                        <FaCalendarAlt className="text-white text-xl" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl md:text-2xl font-bold text-slate-800">Calendario de Entrenamientos</h1>
-                        <p className="text-sm md:text-base text-slate-500">Filtrado por Modo de Entrenamiento</p>
-                    </div>
+                    <h1 className="text-2xl font-bold text-gray-800">Calendario de Entrenamientos</h1>
                 </div>
                 
                 <div className="w-full md:w-72">
@@ -271,20 +265,24 @@ const CalendarPage = () => {
                 </div>
             </div>
 
-            <div className="flex-1 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden relative">
-                {loading && (
-                    <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center">
-                        <ITLoader />
+            <div className="flex-1 overflow-hidden px-6 pb-6 relative">
+                 <div className="h-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative flex flex-col">
+                    {loading && (
+                        <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center">
+                            <ITLoader />
+                        </div>
+                    )}
+                    
+                    <div className="flex-1 overflow-hidden">
+                        <ITCalendar 
+                            events={events}
+                            onSlotClick={handleSlotClick}
+                            onEventClick={handleEventClick}
+                            onSelectRange={handleSelectRange}
+                            mode={isMobile ? 'day' : 'week'}
+                        />
                     </div>
-                )}
-                
-                <ITCalendar 
-                    events={events}
-                    onSlotClick={handleSlotClick}
-                    onEventClick={handleEventClick}
-                    onSelectRange={handleSelectRange}
-                    mode={isMobile ? 'day' : 'week'}
-                />
+                </div>
             </div>
 
             {/* ASSIGNMENT DIALOG */}

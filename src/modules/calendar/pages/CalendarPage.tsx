@@ -247,8 +247,9 @@ const CalendarPage = () => {
 
 
     return (
-        <div className="flex flex-col h-full bg-gray-50">
-             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 py-4 bg-gray-50">
+        <div className="flex flex-col h-full bg-gray-50 h-max">
+             {/* Header Section */}
+             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 py-4 bg-gray-50 shrink-0">
                 <div className="flex items-center gap-3">
                     <h1 className="text-2xl font-bold text-gray-800">Calendario de Entrenamientos</h1>
                 </div>
@@ -265,23 +266,23 @@ const CalendarPage = () => {
                 </div>
             </div>
 
-            <div className="flex-1 overflow-hidden px-6 pb-6 relative">
-                 <div className="h-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative flex flex-col">
+            {/* Calendar Conatiner */}
+            <div className="flex-1 overflow-hidden px-4 md:px-6 pb-4 md:pb-6 relative ">
+                 <div className="h-full w-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative flex flex-col">
                     {loading && (
-                        <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center backdrop-blur-sm">
                             <ITLoader />
                         </div>
                     )}
                     
-                    <div className="flex-1 overflow-hidden">
                         <ITCalendar 
                             events={events}
                             onSlotClick={handleSlotClick}
                             onEventClick={handleEventClick}
                             onSelectRange={handleSelectRange}
-                            mode={isMobile ? 'day' : 'week'}
+                            mode={isMobile ? 'week' : 'week'}
+                            className="border-0 rounded-none shadow-none h-full"
                         />
-                    </div>
                 </div>
             </div>
 

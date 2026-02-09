@@ -17,7 +17,7 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.28.5.tgz#010b6938fab7cb7df74aa2bbc06aa503b8fe5fb4"
   integrity sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==
 
-"@babel/parser@^7.28.5":
+"@babel/parser@^7.29.0":
   version "7.29.0"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.29.0.tgz#669ef345add7d057e92b7ed15f0bac07611831b6"
   integrity sha512-IyDgFV5GeDUVX4YdF/3CPULtVGSXXMLh1xVIgdCgxApktqnQV0r7/8Nqthg+8YLGaAtdyIlo2qIdZrbCv4+7ww==
@@ -961,24 +961,24 @@
     path-browserify "^1.0.1"
     vscode-uri "^3.0.8"
 
-"@vue/compiler-core@3.5.27":
-  version "3.5.27"
-  resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.5.27.tgz#ce4402428e26095586eb889c41f6e172eb3960bd"
-  integrity sha512-gnSBQjZA+//qDZen+6a2EdHqJ68Z7uybrMf3SPjEGgG4dicklwDVmMC1AeIHxtLVPT7sn6sH1KOO+tS6gwOUeQ==
+"@vue/compiler-core@3.5.28":
+  version "3.5.28"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.5.28.tgz#8298ab91d34b2c0d7d398384cd840471919e7e34"
+  integrity sha512-kviccYxTgoE8n6OCw96BNdYlBg2GOWfBuOW4Vqwrt7mSKWKwFVvI8egdTltqRgITGPsTFYtKYfxIG8ptX2PJHQ==
   dependencies:
-    "@babel/parser" "^7.28.5"
-    "@vue/shared" "3.5.27"
-    entities "^7.0.0"
+    "@babel/parser" "^7.29.0"
+    "@vue/shared" "3.5.28"
+    entities "^7.0.1"
     estree-walker "^2.0.2"
     source-map-js "^1.2.1"
 
 "@vue/compiler-dom@^3.5.0":
-  version "3.5.27"
-  resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.5.27.tgz#32b2bc87f0a652c253986796ace0ed6213093af8"
-  integrity sha512-oAFea8dZgCtVVVTEC7fv3T5CbZW9BxpFzGGxC79xakTr6ooeEqmRuvQydIiDAkglZEAd09LgVf1RoDnL54fu5w==
+  version "3.5.28"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.5.28.tgz#4e27b885898f4799d95305dfc56d14c2dcf8e5ba"
+  integrity sha512-/1ZepxAb159jKR1btkefDP+J2xuWL5V3WtleRmxaT+K2Aqiek/Ab/+Ebrw2pPj0sdHO8ViAyyJWfhXXOP/+LQA==
   dependencies:
-    "@vue/compiler-core" "3.5.27"
-    "@vue/shared" "3.5.27"
+    "@vue/compiler-core" "3.5.28"
+    "@vue/shared" "3.5.28"
 
 "@vue/compiler-vue2@^2.7.16":
   version "2.7.16"
@@ -1002,10 +1002,10 @@
     muggle-string "^0.4.1"
     path-browserify "^1.0.1"
 
-"@vue/shared@3.5.27", "@vue/shared@^3.5.0":
-  version "3.5.27"
-  resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.5.27.tgz#33a63143d8fb9ca1b3efbc7ecf9bd0ab05f7e06e"
-  integrity sha512-dXr/3CgqXsJkZ0n9F3I4elY8wM9jMJpP3pvRG52r6m0tu/MsAFIe6JpXVGeNMd/D9F4hQynWT8Rfuj0bdm9kFQ==
+"@vue/shared@3.5.28", "@vue/shared@^3.5.0":
+  version "3.5.28"
+  resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.5.28.tgz#ed9b6785e9452621ad3ab2f2775e9cba494a9ef4"
+  integrity sha512-cfWa1fCGBxrvaHRhvV3Is0MgmrbSCxYTXCSCau2I0a1Xw1N1pHAvkWCiXPRAqjvToILvguNyEwjevUqAuBQWvQ==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"
@@ -1135,24 +1135,6 @@ axios@^1.7.9:
     follow-redirects "^1.15.11"
     form-data "^4.0.5"
     proxy-from-env "^1.1.0"
-
-"axzy_ui_system@file:./axzy_ui_system-v1.0.123.tgz":
-  version "1.0.123"
-  resolved "file:./axzy_ui_system-v1.0.123.tgz#a6ff450500891aee662fb170a150a821264fa8bc"
-  dependencies:
-    autoprefixer "^10.4.20"
-    clsx "^2.1.1"
-    date-fns "^4.1.0"
-    formik "^2.4.6"
-    postcss "^8.4.0"
-    react "19.0.0"
-    react-dom "19.0.0"
-    react-icons "^5.4.0"
-    tailwind-merge "^3.4.0"
-    tailwindcss "3.4.17"
-    tsup "^8.3.6"
-    vite-plugin-dts "^4.5.0"
-    yup "^1.6.1"
 
 "axzy_ui_system@file:./axzy_ui_system-v1.0.124.tgz":
   version "1.0.124"
@@ -1429,7 +1411,7 @@ electron-to-chromium@^1.5.263:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.286.tgz#142be1ab5e1cd5044954db0e5898f60a4960384e"
   integrity sha512-9tfDXhJ4RKFNerfjdCcZfufu49vg620741MNs26a9+bhLThdB+plgMeou98CAaHu/WATj2iHOOHTp1hWtABj2A==
 
-entities@^7.0.0:
+entities@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-7.0.1.tgz#26e8a88889db63417dcb9a1e79a3f1bc92b5976b"
   integrity sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==

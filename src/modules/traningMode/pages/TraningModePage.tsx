@@ -5,8 +5,11 @@ import {
   FaCheckCircle,
   FaDollarSign,
   FaDumbbell,
+  FaFilter,
   FaInfoCircle,
   FaPencilAlt,
+  FaSearch,
+  FaTimes,
   FaTimesCircle,
   FaTrash,
 } from "react-icons/fa";
@@ -24,6 +27,12 @@ const TrainingModePage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [selectedMode, setSelectedMode] = useState<any | null>(null);
+  
+  // Filter States
+  const [filterText, setFilterText] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all"); // 'all', 'active', 'inactive'
+  const [showFilters, setShowFilters] = useState(false);
+
   const dispatch = useDispatch();
 
   const fetchTrainingModes = useCallback(async () => {
@@ -96,25 +105,98 @@ const TrainingModePage = () => {
     fetchTrainingModes();
   }, [fetchTrainingModes]);
 
+  // Filter Logic
+  const hasFilters = filterText || filterStatus !== 'all';
+
+  const clearFilters = () => {
+      setFilterText("");
+      setFilterStatus("all");
+  };
+
+  const filteredModes = trainingModes.filter(mode => {
+      const nameMatch = mode.name.toLowerCase().includes(filterText.toLowerCase()) || 
+                       (mode.description && mode.description.toLowerCase().includes(filterText.toLowerCase()));
+      
+      let statusMatch = true;
+      if (filterStatus === 'active') statusMatch = mode.isActive;
+      if (filterStatus === 'inactive') statusMatch = !mode.isActive;
+
+      return nameMatch && statusMatch;
+  });
+
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <div className="flex items-center justify-between px-6 py-4 bg-gray-50">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Modos de Entrenamiento
-        </h1>
-        <ITButton
-          label="Agregar"
-          onClick={() => {
-            setSelectedMode(null);
-            setShowAddModal(true);
-          }}
-          className="shadow-md"
-        />
+      <div className="flex flex-col gap-4 px-6 py-4 bg-gray-50">
+        <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-800">
+            Modos de Entrenamiento
+            </h1>
+            <div className="flex items-center gap-2">
+                <button 
+                    className="md:hidden flex items-center gap-2 text-indigo-600 font-medium text-sm bg-indigo-50 px-3 py-1.5 rounded-lg"
+                    onClick={() => setShowFilters(!showFilters)}
+                >
+                    <FaFilter /> {showFilters ? 'Ocultar' : 'Filtrar'}
+                </button>
+                <ITButton
+                label="Agregar"
+                onClick={() => {
+                    setSelectedMode(null);
+                    setShowAddModal(true);
+                }}
+                className="shadow-md"
+                />
+            </div>
+        </div>
+
+        {/* Filters Grid */}
+        <div className={`bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex-col gap-4 ${showFilters ? 'flex' : 'hidden'} md:flex`}>
+            <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider hidden md:block">Filtros de búsqueda</span>
+                {hasFilters && (
+                    <button 
+                        onClick={clearFilters}
+                        className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 ml-auto font-medium"
+                    >
+                        <FaTimes /> Limpiar filtros
+                    </button>
+                )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Text Filter */}
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FaSearch className="text-gray-400" />
+                    </div>
+                    <input
+                        type="text"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                        placeholder="Buscar por nombre o descripción..."
+                        value={filterText}
+                        onChange={(e) => setFilterText(e.target.value)}
+                    />
+                </div>
+
+                {/* Status Filter */}
+                <div className="relative">
+                     <select
+                        className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md border bg-white"
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                    >
+                        <option value="all">Todos los estados</option>
+                        <option value="active">Activos</option>
+                        <option value="inactive">Inactivos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trainingModes.map((mode) => (
+        {filteredModes.map((mode) => (
           <div
             key={mode.id}
             className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col gap-4 relative overflow-hidden"
@@ -189,10 +271,10 @@ const TrainingModePage = () => {
           </div>
         ))}
         
-        {trainingModes.length === 0 && (
+        {filteredModes.length === 0 && (
              <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
                 <FaDumbbell className="text-6xl mb-4 opacity-20" />
-                <p>No hay modos de entrenamiento registrados.</p>
+                <p>No se encontraron modos de entrenamiento.</p>
              </div>
         )}
       </div></div>

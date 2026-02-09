@@ -13,9 +13,18 @@ const validationSchema = Yup.object({
 interface AssignScheduleFormProps {
   onSubmit: (values: { trainingModeId: string; dayScheduleId: number }) => void;
   isLoading?: boolean;
+  unavailableScheduleIds?: number[];
+  initialValues?: { trainingModeId: string; dayScheduleId: number };
+  submitLabel?: string;
 }
 
-const AssignScheduleForm = ({ onSubmit, isLoading }: AssignScheduleFormProps) => {
+const AssignScheduleForm = ({ 
+    onSubmit, 
+    isLoading, 
+    unavailableScheduleIds = [], 
+    initialValues = { trainingModeId: "", dayScheduleId: 0 },
+    submitLabel = "Asignar"
+}: AssignScheduleFormProps) => {
   const [trainingModes, setTrainingModes] = useState<any[]>([]);
   const [daySchedules, setDaySchedules] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
@@ -38,14 +47,10 @@ const AssignScheduleForm = ({ onSubmit, isLoading }: AssignScheduleFormProps) =>
     fetchData();
   }, []);
 
-  const initialValues = {
-    trainingModeId: "",
-    dayScheduleId: 0,
-  };
-
   return (
     <Formik
       initialValues={initialValues}
+      enableReinitialize
       validationSchema={validationSchema}
       onSubmit={(values) => {
         onSubmit(values);
@@ -57,6 +62,7 @@ const AssignScheduleForm = ({ onSubmit, isLoading }: AssignScheduleFormProps) =>
             if (!values.trainingModeId) return [];
             return daySchedules
                 .filter(s => String(s.modeId) === String(values.trainingModeId))
+                .filter(s => !unavailableScheduleIds.includes(s.id)) // Filter out already assigned
                 .map(s => {
                     const booked = s.appointments ? s.appointments.length : 0;
                     const available = s.capacity - booked;
@@ -74,8 +80,9 @@ const AssignScheduleForm = ({ onSubmit, isLoading }: AssignScheduleFormProps) =>
                         displayLabel: `${dateStr} Inicio: ${startStr} - Fin ${endStr} (Disponibles: ${available})`
                     };
                 })
-                .filter(s => s.available > 0); // Exclude full schedules
-        }, [daySchedules, values.trainingModeId]);
+                .filter(s => s.available > 0 || s.id === initialValues.dayScheduleId); // Ensure current is visible if passed
+        }, [daySchedules, values.trainingModeId, unavailableScheduleIds, initialValues.dayScheduleId]);
+
 
         return (
           <Form className="flex flex-col gap-4">
@@ -119,7 +126,7 @@ const AssignScheduleForm = ({ onSubmit, isLoading }: AssignScheduleFormProps) =>
                         <ITButton
                         type="submit"
                         disabled={!isValid || isLoading}
-                        label="Asignar"
+                        label={submitLabel}
                         />
                     </div>
                  </>

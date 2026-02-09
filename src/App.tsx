@@ -15,9 +15,11 @@ import AppointmentsPage from "./modules/appointments/pages/AppointmentsPage";
 import CalendarPage from "./modules/calendar/pages/CalendarPage";
 import PaymentsPage from "./modules/payments/pages/PaymentsPage";
 import EvaluationFormPage from "./modules/evaluations/pages/EvaluationFormPage";
+import NotificationsPage from "./modules/notifications/pages/NotificationsPage";
 
 
 function App() {
+  // Force HMR update
   const token = useSelector((state: any) => state.auth.token);
   const dispatch = useDispatch();
 
@@ -79,6 +81,7 @@ function App() {
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
         <Route path="/evaluations/new" element={<EvaluationFormPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
 
       </Route>
       <Route path="*" element={<Navigate to="/home" />} />

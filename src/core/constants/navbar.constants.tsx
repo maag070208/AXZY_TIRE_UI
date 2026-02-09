@@ -1,6 +1,7 @@
 import { AppState } from "@app/core/store/store";
 import LOGO from "@assets/logo.png";
 import {
+  FaBell,
   FaCalendarAlt,
   FaChild,
   FaClock,
@@ -38,7 +39,7 @@ export const useNavigationItems = (): any[] => {
     },
     {
       id: "children",
-      label: "Hijos",
+      label: user.role === "ADMIN" ? "Alumnos" : "Hijos",
       action: () => navigate("/children"),
       isActive: isRouteActive("/children"),
       icon: <FaChild className="text-white" />,
@@ -86,6 +87,13 @@ export const useNavigationItems = (): any[] => {
         action: () => navigate("/payments"),
         icon: <FaMoneyBillWave className="text-white" />,
         isActive: isRouteActive("/payments"),
+      },
+      {
+        id: "notifications",
+        label: "Notificaciones",
+        action: () => navigate("/notifications"),
+        icon: <FaBell className="text-white" />,
+        isActive: isRouteActive("/notifications"),
       },
     );
   }

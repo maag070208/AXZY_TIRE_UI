@@ -1,4 +1,4 @@
-import { get, remove } from "@app/core/axios/axios";
+import { get, put, remove } from "@app/core/axios/axios";
 import { TResult } from "@app/core/types/TResult";
 
 export interface Appointment {
@@ -19,6 +19,11 @@ export interface Appointment {
     startTime: string;
     endTime: string;
     modeId: number;
+    coach?: {
+        id: number;
+        name: string;
+        lastName: string;
+    };
   };
   mode: {
     id: number;
@@ -37,6 +42,10 @@ export const getAllAppointments = async (): Promise<TResult<Appointment[]>> => {
 
 export const getAppointmentsByUser = async (userId: number): Promise<TResult<Appointment[]>> => {
   return await get(`/appointments/user/${userId}`);
+};
+
+export const updateAppointment = async (id: number, data: any): Promise<TResult<Appointment>> => {
+  return await put(`/appointments/${id}`, data);
 };
 
 export const deleteAppointment = async (id: number): Promise<TResult<any>> => {

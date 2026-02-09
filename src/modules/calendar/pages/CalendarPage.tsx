@@ -229,6 +229,21 @@ const CalendarPage = () => {
     const [createData, setCreateData] = useState<{start: Date | null, end: Date | null, capacity: number, coachId: string}>({ 
         start: null, end: null, capacity: 10, coachId: ""
     });
+    
+    // Recurrence State
+    const [isRecurring, setIsRecurring] = useState(false);
+    const [recurringUntil, setRecurringUntil] = useState<Date | null>(null);
+    const [selectedDays, setSelectedDays] = useState<number[]>([]);
+    
+    const WEEK_DAYS = [
+        { label: 'D', value: 0 },
+        { label: 'L', value: 1 },
+        { label: 'M', value: 2 },
+        { label: 'X', value: 3 },
+        { label: 'J', value: 4 },
+        { label: 'V', value: 5 },
+        { label: 'S', value: 6 },
+    ];
 
     const handleSelectRange = (start: Date, end: Date) => {
         console.log("Selected range:", start, end);
@@ -241,6 +256,12 @@ const CalendarPage = () => {
         }
 
         setCreateData({ start, end, capacity: 10, coachId: initialCoachId });
+        
+        // Reset recurrence defaults
+        setIsRecurring(false);
+        setRecurringUntil(null);
+        setSelectedDays([start.getDay()]); // Auto-select the clicked day
+
         setShowCreateModal(true);
     };
 
@@ -467,6 +488,61 @@ const CalendarPage = () => {
                          />
                     )}
 
+                    {/* RECURRENCE OPTIONS */}
+                    <div className="pt-2 border-t border-gray-100 mt-2">
+                        <div className="flex items-center gap-2 mb-3 pt-2">
+                            <input 
+                                type="checkbox" 
+                                id="isRecurring"
+                                checked={isRecurring}
+                                onChange={(e) => setIsRecurring(e.target.checked)}
+                                className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4 border-gray-300"
+                            />
+                            <label htmlFor="isRecurring" className="text-sm font-bold text-gray-700 select-none cursor-pointer">
+                                Repetir semanalmente
+                            </label>
+                        </div>
+                        
+                        {isRecurring && (
+                            <div className="space-y-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wide">Días de la semana</label>
+                                    <div className="flex gap-1 justify-between">
+                                        {WEEK_DAYS.map(day => (
+                                            <label key={day.value} className="flex flex-col items-center cursor-pointer group">
+                                                <span className={`text-xs font-bold mb-1 transition-colors ${selectedDays.includes(day.value) ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                                                    {day.label}
+                                                </span>
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={selectedDays.includes(day.value)}
+                                                    onChange={(e) => {
+                                                        const checked = e.target.checked;
+                                                        setSelectedDays(prev => 
+                                                            checked ? [...prev, day.value] : prev.filter(d => d !== day.value)
+                                                        );
+                                                    }}
+                                                    className="rounded-full text-indigo-600 focus:ring-indigo-500 h-4 w-4 border-gray-300 cursor-pointer"
+                                                />
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Hasta la fecha</label>
+                                    <input 
+                                        type="date" 
+                                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                                        value={recurringUntil ? format(recurringUntil, 'yyyy-MM-dd') : ''}
+                                        min={createData.start ? format(createData.start, 'yyyy-MM-dd') : undefined}
+                                        onChange={(e) => setRecurringUntil(e.target.value ? new Date(e.target.value) : null)}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     <div className="flex justify-end pt-4 gap-2">
                         <ITButton 
                             label="Cancelar" 
@@ -480,27 +556,44 @@ const CalendarPage = () => {
                             onClick={async () => {
                                 // Inline implementation until imports are fixed
                                 if (!createData.start || !createData.end || !selectedModeId) return;
-                                if ((user?.role === "ADMIN" || user?.role === "COACH") && !createData.coachId && user?.role === "ADMIN") {
-                                    // if Admin, coach selection is probably mandatory. If Coach, it was auto-set.
-                                    // Let's not strictly enforce it if legacy schedules exist, but for new ones it's good practice.
-                                    // For now, let's allow it to be optional or enforce it if requirement says so.
-                                    // "el admin al dar de alta un horario tiene que seleciionar al entreandor" -> Enforce it? 
-                                    const confirmWithoutString = !createData.coachId ? confirm("¿Crear sin entrenador asignado?") : true;
-                                    if(!confirmWithoutString) return;
+                                // Enforce Coach selection for Admin
+                                if (user?.role === "ADMIN" && !createData.coachId) {
+                                    dispatch(showToast({ type: "warning", message: "Debe asignar un entrenador al horario." }));
+                                    return;
+                                }
+
+                                if (isRecurring) {
+                                    if (selectedDays.length === 0) {
+                                        dispatch(showToast({ type: "warning", message: "Seleccione al menos un día para la recurrencia." }));
+                                        return;
+                                    }
+                                    if (!recurringUntil) {
+                                        dispatch(showToast({ type: "warning", message: "Seleccione una fecha de fin para la recurrencia." }));
+                                        return;
+                                    }
                                 }
 
                                 setLoading(true);
                                 try {
-                                     await createDaySchedule({
+                                     const payload: any = {
                                          date: createData.start,
                                          startTime: createData.start,
                                          endTime: createData.end,
                                          capacity: createData.capacity,
                                          modeId: Number(selectedModeId),
                                          coachId: createData.coachId ? Number(createData.coachId) : null
-                                     });
+                                     };
+
+                                     if (isRecurring && recurringUntil) {
+                                         payload.recurrence = {
+                                             days: selectedDays,
+                                             until: recurringUntil
+                                         };
+                                     }
+
+                                     await createDaySchedule(payload);
                                      
-                                     dispatch(showToast({ type: "success", message: "Horario creado exitosamente" }));
+                                     dispatch(showToast({ type: "success", message: "Horarios creados exitosamente" }));
                                      setShowCreateModal(false);
                                      
                                      const schedulesRes = await getAllDaySchedules();

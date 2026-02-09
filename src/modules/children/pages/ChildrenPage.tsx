@@ -5,6 +5,7 @@ import {
   FaCalendarPlus,
   FaChartLine,
   FaPencilAlt,
+  FaSearch,
   FaTrash,
   FaUser,
 } from "react-icons/fa";
@@ -33,6 +34,12 @@ const ChildrenPage = () => {
   const [showReportsModal, setShowReportsModal] = useState(false);
 
   const [selectedChild, setSelectedChild] = useState<any | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredChildren = children.filter(child => 
+    child.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    child.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const fetchChildren = useCallback(async () => {
     setLoading(true);
@@ -126,23 +133,43 @@ const ChildrenPage = () => {
     );
   }
 
+
+
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <div className="flex items-center justify-between px-6 py-4 bg-gray-50">
-        <h1 className="text-2xl font-bold text-gray-800">Mis Hijos</h1>
-        <ITButton
-          label="Agregar"
-          onClick={() => {
-            setSelectedChild(null);
-            setShowFormModal(true);
-          }}
-          className="shadow-md"
-        />
+      <div className="flex flex-col gap-4 px-6 py-4 bg-gray-50">
+        <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-800">
+            {user.role === "ADMIN" ? "Alumnos" : "Mis Hijos"}
+            </h1>
+            <ITButton
+            label="Agregar"
+            onClick={() => {
+                setSelectedChild(null);
+                setShowFormModal(true);
+            }}
+            className="shadow-md"
+            />
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FaSearch className="text-gray-400" />
+            </div>
+            <input
+                type="text"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm transition duration-150 ease-in-out"
+                placeholder={user.role === "ADMIN" ? "Buscar alumno por nombre..." : "Buscar hijo..."}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {children.map((child) => {
+        {filteredChildren.map((child) => {
           const hasAppointment =
             child.appointments && child.appointments.length > 0;
             
@@ -185,12 +212,7 @@ const ChildrenPage = () => {
                         setSelectedChild(child);
                         setShowAssignModal(true);
                     }}
-                    disabled={hasAppointment}
-                    className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-colors ${
-                        hasAppointment 
-                        ? 'text-gray-300 cursor-not-allowed' 
-                        : 'text-indigo-600 hover:bg-indigo-50'
-                    }`}
+                    className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-colors text-indigo-600 hover:bg-indigo-50`}
                  >
                     <FaCalendarPlus className="text-xl" />
                     <span className="text-[10px] font-medium">Asignar</span>
@@ -270,7 +292,10 @@ const ChildrenPage = () => {
         }}
         title={`Asignar Entrenamiento a ${selectedChild?.name || ""}`}
       >
-        <AssignScheduleForm onSubmit={handleAssignTraining} />
+        <AssignScheduleForm 
+            onSubmit={handleAssignTraining} 
+            unavailableScheduleIds={selectedChild?.appointments?.map((a: any) => a.scheduleId) || []}
+        />
       </ITDialog>
 
       {/* DELETE CONFIRM MODAL */}

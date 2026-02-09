@@ -19,8 +19,8 @@ const HomePage = () => {
 
     const cards = [
       {
-        title: "Hijos",
-        description: "Administra los hijos registrados del usuario",
+        title: user.role === "ADMIN" ? "Alumnos" : "Hijos",
+        description: user.role === "ADMIN" ? "Administra los alumnos registrados" : "Administra los hijos registrados del usuario",
         icon: <FaChild />,
         action: () => navigate("/children"),
       },

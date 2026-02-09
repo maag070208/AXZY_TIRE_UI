@@ -7,7 +7,9 @@ import {
   FaCalendarAlt,
   FaClock,
   FaDumbbell,
+  FaFilter,
   FaPencilAlt,
+  FaTimes,
   FaTrash,
   FaUsers,
 } from "react-icons/fa";
@@ -25,7 +27,15 @@ const DaySchedulePage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
+  
+  // Filter States
+  const [filterDate, setFilterDate] = useState("");
+  const [filterTime, setFilterTime] = useState("");
+  const [filterMode, setFilterMode] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
   const dispatch = useDispatch();
+
   const fetchSchedules = useCallback(async () => {
     const response = await getAllDaySchedules().catch(() => null);
     if (response) setSchedules(response.data);
@@ -70,20 +80,110 @@ const DaySchedulePage = () => {
     fetchSchedules();
   }, [fetchSchedules]);
 
+  // Filter Logic
+  const hasFilters = filterDate || filterTime || filterMode;
+
+  const clearFilters = () => {
+      setFilterDate("");
+      setFilterTime("");
+      setFilterMode("");
+  };
+
+  const filteredSchedules = schedules.filter(item => {
+      const itemDate = new Date(item.date).toLocaleDateString("en-CA");
+      const startTimeStr = format(new Date(item.startTime), "HH:mm");
+      const endTimeStr = format(new Date(item.endTime), "HH:mm");
+      const modeName = item.mode.name.toLowerCase();
+
+      const matchesDate = !filterDate || itemDate === filterDate;
+      const matchesTime = !filterTime || startTimeStr.includes(filterTime) || endTimeStr.includes(filterTime);
+      const matchesMode = !filterMode || modeName.includes(filterMode.toLowerCase());
+
+      return matchesDate && matchesTime && matchesMode;
+  });
+
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <div className="flex items-center justify-between px-6 py-4 bg-gray-50">
-        <h1 className="text-2xl font-bold text-gray-800">Horarios por Día</h1>
-        <ITButton 
-            label="Agregar" 
-            onClick={() => setShowAddModal(true)} 
-            className="shadow-md"
-        />
+      <div className="flex flex-col gap-4 px-6 py-4 bg-gray-50">
+        <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-800">Horarios por Día</h1>
+            <div className="flex items-center gap-2">
+                <button 
+                    className="md:hidden flex items-center gap-2 text-indigo-600 font-medium text-sm bg-indigo-50 px-3 py-1.5 rounded-lg"
+                    onClick={() => setShowFilters(!showFilters)}
+                >
+                    <FaFilter /> {showFilters ? 'Ocultar' : 'Filtrar'}
+                </button>
+                <ITButton 
+                    label="Agregar" 
+                    onClick={() => setShowAddModal(true)} 
+                    className="shadow-md"
+                />
+            </div>
+        </div>
+
+        {/* Filters Grid */}
+        <div className={`bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex-col gap-4 ${showFilters ? 'flex' : 'hidden'} md:flex`}>
+            <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider hidden md:block">Filtros de búsqueda</span>
+                {hasFilters && (
+                    <button 
+                        onClick={clearFilters}
+                        className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 ml-auto font-medium"
+                    >
+                        <FaTimes /> Limpiar filtros
+                    </button>
+                )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Date Filter */}
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FaCalendarAlt className="text-gray-400" />
+                    </div>
+                    <input
+                        type="date"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                        value={filterDate}
+                        onChange={(e) => setFilterDate(e.target.value)}
+                    />
+                </div>
+
+                {/* Time Filter */}
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FaClock className="text-gray-400" />
+                    </div>
+                     <input
+                        type="text"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                        placeholder="Hora (ej: 09:00)"
+                        value={filterTime}
+                        onChange={(e) => setFilterTime(e.target.value)}
+                    />
+                </div>
+
+                {/* Mode Filter */}
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FaDumbbell className="text-gray-400" />
+                    </div>
+                    <input
+                        type="text"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                        placeholder="Buscar por modo..."
+                        value={filterMode}
+                        onChange={(e) => setFilterMode(e.target.value)}
+                    />
+                </div>
+            </div>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {schedules.map((item) => {
+        {filteredSchedules.map((item) => {
             const date = new Date(item.date);
             const formattedDate = `${date.getUTCDate().toString().padStart(2, "0")}/${(date.getUTCMonth() + 1).toString().padStart(2, "0")}/${date.getUTCFullYear()}`;
             
@@ -181,10 +281,10 @@ const DaySchedulePage = () => {
             );
         })}
         
-        {schedules.length === 0 && (
+        {filteredSchedules.length === 0 && (
             <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
                 <FaCalendarAlt className="text-6xl mb-4 opacity-20" />
-                <p>No hay horarios registrados.</p>
+                <p>No se encontraron horarios con los criterios de búsqueda.</p>
             </div>
         )}
         </div>

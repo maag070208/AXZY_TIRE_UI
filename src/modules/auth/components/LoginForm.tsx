@@ -31,7 +31,7 @@ const LoginFormComponent = ({
       required: true,
       column: 12,
       minLength: 3,
-      maxLength: 20,
+      maxLength: 100,
       validation: Yup.string()
         .required("Este campo es requerido")
         .email("Ingrese un email válido"),
@@ -43,7 +43,7 @@ const LoginFormComponent = ({
       type: showPassword ? "text" : "password",
       required: true,
       minLength: 4,
-      maxLength: 20,
+      maxLength: 100,
       column: 12,
       validation: Yup.string().required("Este campo es requerido"),
       rightIcon: !showPassword ? (

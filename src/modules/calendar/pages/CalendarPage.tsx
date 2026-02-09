@@ -288,7 +288,7 @@ const CalendarPage = () => {
             </div>
 
             {/* Calendar Conatiner */}
-            <div className="flex-1 overflow-hidden px-4 md:px-6 pb-4 md:pb-6 relative ">
+            <div className="flex-1 overflow-hidden pb-4 md:pb-6 relative ">
                  <div className="h-full w-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative flex flex-col">
                     {loading && (
                         <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center backdrop-blur-sm">
@@ -302,7 +302,6 @@ const CalendarPage = () => {
                             onEventClick={handleEventClick}
                             onSelectRange={handleSelectRange}
                             mode={isMobile ? 'week' : 'week'}
-                            className="border-0 rounded-none shadow-none h-full"
                         />
                 </div>
             </div>

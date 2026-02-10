@@ -1,6 +1,6 @@
 import { AppState } from "@app/core/store/store";
 import { useEffect, useState } from "react";
-import { FaCalendarAlt, FaChild, FaClock, FaDumbbell, FaListAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaChild, FaClock, FaDumbbell, FaListAlt, FaUsers } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { HomeCardItem } from "../components/HomeCardItem";
@@ -51,6 +51,12 @@ const HomePage = () => {
               description: "Administra los diferentes modos de entrenamiento",
               icon: <FaDumbbell />,
               action: () => navigate("/training-modes"),
+            },
+            {
+              title: "Usuarios",
+              description: "Administra los usuarios del sistema (Admins, Coaches, Usuarios)",
+              icon: <FaUsers />,
+              action: () => navigate("/users"),
             },
         );
     }

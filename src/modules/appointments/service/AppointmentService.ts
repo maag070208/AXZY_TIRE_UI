@@ -1,14 +1,14 @@
-import { get, put, remove } from "@app/core/axios/axios";
+import { get, post, put, remove } from "@app/core/axios/axios";
 import { TResult } from "@app/core/types/TResult";
 
 export interface Appointment {
   id: number;
   userId: number;
-  childId: number;
+  childId?: number;
   scheduleId: number;
   modeId: number;
   createdAt: string;
-  child: {
+  child?: {
     id: number;
     name: string;
     lastName: string;
@@ -42,6 +42,10 @@ export const getAllAppointments = async (): Promise<TResult<Appointment[]>> => {
 
 export const getAppointmentsByUser = async (userId: number): Promise<TResult<Appointment[]>> => {
   return await get(`/appointments/user/${userId}`);
+};
+
+export const createAppointment = async (data: any): Promise<TResult<Appointment>> => {
+  return await post("/appointments", data);
 };
 
 export const updateAppointment = async (id: number, data: any): Promise<TResult<Appointment>> => {

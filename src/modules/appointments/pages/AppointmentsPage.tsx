@@ -40,7 +40,11 @@ const AppointmentsPage = () => {
     }
 
     const filteredAppointments = appointments.filter(appt => {
-        const childName = `${appt.child.name} ${appt.child.lastName}`.toLowerCase();
+        const attendeeName = appt.child 
+            ? `${appt.child.name} ${appt.child.lastName}` 
+            : `${appt.user?.name || ''} ${appt.user?.lastName || ''}`; 
+
+        const childName = attendeeName.toLowerCase();
         const coachName = appt.schedule.coach ? `${appt.schedule.coach.name} ${appt.schedule.coach.lastName}`.toLowerCase() : "";
         const apptDate = new Date(appt.schedule.date).toLocaleDateString('en-CA'); // YYYY-MM-DD
         const apptTime = formatTime(appt.schedule.startTime);
@@ -233,7 +237,9 @@ const AppointmentsPage = () => {
                                     <div className="flex flex-col">
                                         <span className="text-sm text-gray-500 font-medium">Atleta</span>
                                         <span className="text-base font-bold text-gray-900">
-                                            {appointment.child.name} {appointment.child.lastName}
+                                            {appointment.child 
+                                                ? `${appointment.child.name} ${appointment.child.lastName}` 
+                                                : `${appointment.user?.name || ''} ${appointment.user?.lastName || ''}`}
                                         </span>
                                     </div>
                                 </div>
@@ -320,9 +326,13 @@ const AppointmentsPage = () => {
                 title="Cancelar Cita"
             >
                 <div className="flex flex-col gap-4">
-                    <p className="text-gray-600">
-                        ¿Estás seguro que deseas cancelar la cita de <span className="font-semibold text-gray-900">{selectedAppointment?.child.name}</span> para el <span className="font-semibold text-gray-900">{selectedAppointment ? new Date(selectedAppointment.schedule.date).toLocaleDateString() : ''}</span>?
-                    </p>
+                        <p className="text-gray-600 mb-6">
+                            ¿Estás seguro de que deseas eliminar la cita para <strong>
+                                {selectedAppointment?.child 
+                                    ? `${selectedAppointment.child.name} ${selectedAppointment.child.lastName}`
+                                    : `${selectedAppointment?.user?.name || ''} ${selectedAppointment?.user?.lastName || ''}`}
+                            </strong>? esta acción no se puede deshacer.
+                        </p>
                     <div className="flex justify-end gap-2 mt-4">
                         <ITButton
                             label="No, volver"

@@ -16,6 +16,7 @@ import CalendarPage from "./modules/calendar/pages/CalendarPage";
 import PaymentsPage from "./modules/payments/pages/PaymentsPage";
 import EvaluationFormPage from "./modules/evaluations/pages/EvaluationFormPage";
 import NotificationsPage from "./modules/notifications/pages/NotificationsPage";
+import UsersPage from "./modules/users/pages/UsersPage";
 
 
 function App() {
@@ -82,6 +83,7 @@ function App() {
         <Route path="/payments" element={<PaymentsPage />} />
         <Route path="/evaluations/new" element={<EvaluationFormPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/users" element={<UsersPage />} />
 
       </Route>
       <Route path="*" element={<Navigate to="/home" />} />

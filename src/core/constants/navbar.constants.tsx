@@ -8,6 +8,7 @@ import {
   FaDumbbell,
   FaHome,
   FaListAlt,
+  FaUsers,
   FaMoneyBillWave,
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -87,6 +88,13 @@ export const useNavigationItems = (): any[] => {
         action: () => navigate("/payments"),
         icon: <FaMoneyBillWave className="text-white" />,
         isActive: isRouteActive("/payments"),
+      },
+      {
+        id: "users",
+        label: "Usuarios",
+        action: () => navigate("/users"),
+        icon: <FaUsers className="text-white" />,
+        isActive: isRouteActive("/users"),
       },
       {
         id: "notifications",

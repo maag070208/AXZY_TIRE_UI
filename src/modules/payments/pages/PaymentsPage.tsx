@@ -1,4 +1,4 @@
-import { getCoaches, User as CoachUser } from "../../users/services/UserService";
+import { getCoaches } from "../../users/services/UserService";
 import { getCoachPayments, PaymentSummary } from "../services/PaymentsService";
 import { format, parseISO, startOfWeek, endOfWeek, addWeeks, subWeeks } from "date-fns";
 import { 
@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { ITSelect, ITLoader } from "axzy_ui_system";
 
 const PaymentsPage = () => {
-    const [coaches, setCoaches] = useState<CoachUser[]>([]);
+    const [coaches, setCoaches] = useState<any[]>([]);
     const [selectedCoachId, setSelectedCoachId] = useState<string>("");
     
     // Week State (Reference date)

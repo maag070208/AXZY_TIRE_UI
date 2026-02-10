@@ -6,11 +6,12 @@ import { useEffect, useMemo, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { deleteAppointment } from "../../appointments/service/AppointmentService";
-import { assignChildToTrainingMode, getAllChildren, getChildByUserId } from "../../children/service/ChildrenService";
-import { createDaySchedule, deleteDaySchedule, getAllDaySchedules } from "../../daySchedules/services/DayScheduleService";
+import { createAppointment, deleteAppointment } from "../../appointments/service/AppointmentService";
+import { getAllChildren, getChildByUserId } from "../../children/service/ChildrenService";
+import { createDaySchedule, deleteDaySchedule, getAllDaySchedules, updateDaySchedule } from "../../daySchedules/services/DayScheduleService";
 import { getAllTrainingModes } from "../../traningMode/services/TrainingModeService";
-import { User as CoachUser, getCoaches } from "../../users/services/UserService";
+import { User as CoachUser } from "../../users/types/user.types";
+import { getCoaches } from "../../users/services/UserService";
 
 interface CalendarEvent {
   id: string;
@@ -38,6 +39,16 @@ const CalendarPage = () => {
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
     const [selectedChildId, setSelectedChildId] = useState<string>("");
+    const [enrollmentType, setEnrollmentType] = useState<'child' | 'self'>('child');
+
+    // Edit Coach State
+    const [isEditingCoach, setIsEditingCoach] = useState(false);
+    const [selectedCoachId, setSelectedCoachId] = useState<string>("");
+
+    // Edit Time State
+    const [isEditingTime, setIsEditingTime] = useState(false);
+    const [editStartTime, setEditStartTime] = useState<string>("");
+    const [editEndTime, setEditEndTime] = useState<string>("");
 
     // Responsive State
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -96,19 +107,33 @@ const CalendarPage = () => {
     }, [user?.id, user?.role]);
 
     const handleAssign = async () => {
-        if (!selectedEvent || !selectedChildId) return;
+        if (!selectedEvent) return;
 
-        // Find the selected child to get their userId
-        const childToAssign = children.find(c => String(c.id) === selectedChildId);
-        if (!childToAssign) return;
+        if (enrollmentType === 'child' && !selectedChildId) {
+             dispatch(showToast({ type: "warning", message: "Seleccione un alumno" }));
+             return;
+        }
+
+        let targetUserId = Number(user.id);
+        let targetChildId: number | null = null;
+        
+        if (enrollmentType === 'child') {
+             const childToAssign = children.find(c => String(c.id) === selectedChildId);
+             if (!childToAssign) return;
+             targetUserId = Number(childToAssign.userId);
+             targetChildId = Number(selectedChildId);
+        } else {
+             targetUserId = Number(user.id);
+             targetChildId = null;
+        }
 
         setLoading(true);
         try {
-            await assignChildToTrainingMode({
-                userId: Number(childToAssign.userId), // Use the child's parent ID
-                childId: Number(selectedChildId),
-                dayScheduleId: Number(selectedEvent.id),
-                trainingModeId: Number(selectedModeId)
+            await createAppointment({
+                userId: targetUserId,
+                childId: targetChildId,
+                scheduleId: Number(selectedEvent.id),
+                modeId: Number(selectedModeId)
             });
             
             dispatch(showToast({ type: "success", message: "Inscrito correctamente" }));
@@ -120,7 +145,7 @@ const CalendarPage = () => {
             if (schedulesRes.data) setDaySchedules(schedulesRes.data);
 
         } catch (error: any) {
-            console.error("Error assigning child:", error);
+            console.error("Error assigning:", error);
             dispatch(showToast({ type: "error", message: error?.message || "Error al inscribir" }));
         } finally {
             setLoading(false);
@@ -222,6 +247,23 @@ const CalendarPage = () => {
         setSelectedEvent(event);
         setSelectedChildId("");
         setShowAssignModal(true);
+        // Initialize coach edit state
+        setIsEditingCoach(false);
+        if (event.data?.coach) {
+            setSelectedCoachId(String(event.data.coach.id));
+        } else {
+            setSelectedCoachId("");
+        }
+
+        // Initialize time edit state
+        setIsEditingTime(false);
+        if (event.start && event.end) {
+            setEditStartTime(format(new Date(event.start), 'HH:mm'));
+            setEditEndTime(format(new Date(event.end), 'HH:mm'));
+        } else {
+            setEditStartTime("");
+            setEditEndTime("");
+        }
     };
 
     // Creation Dialog State
@@ -320,12 +362,181 @@ const CalendarPage = () => {
                              Fecha: {selectedEvent?.start ? format(new Date(selectedEvent.start), 'dd/MM/yyyy') : '-'}
                         </p>
                         <p className="text-gray-700">
-                             Hora: {selectedEvent?.start ? format(new Date(selectedEvent.start), 'HH:mm') : '-'} - {selectedEvent?.end ? format(new Date(selectedEvent.end), 'HH:mm') : '-'}
+                             Fecha: {selectedEvent?.start ? format(new Date(selectedEvent.start), 'dd/MM/yyyy') : '-'}
                         </p>
-                        {selectedEvent?.data?.coach && (
-                            <p className="text-gray-700 font-medium">
-                                Entrenador: {selectedEvent.data.coach.name} {selectedEvent.data.coach.lastName}
-                            </p>
+                        
+                        {!isEditingTime && (
+                            <div className="flex items-center justify-between">
+                                <p className="text-gray-700">
+                                    Hora: {selectedEvent?.start ? format(new Date(selectedEvent.start), 'HH:mm') : '-'} - {selectedEvent?.end ? format(new Date(selectedEvent.end), 'HH:mm') : '-'}
+                                </p>
+                                {/* {user?.role === "ADMIN" && (
+                                    <button 
+                                        onClick={() => setIsEditingTime(true)}
+                                        className="text-blue-600 hover:text-blue-800 text-xs font-semibold underline"
+                                    >
+                                        Editar Hora
+                                    </button>
+                                )} */}
+                            </div>
+                        )}
+
+                        {isEditingTime && (
+                            <div className="bg-white p-2 rounded border border-blue-200 mt-2 mb-2">
+                                <div className="flex gap-2 mb-2">
+                                    <div className="flex-1">
+                                        <label className="block text-xs font-bold text-gray-500 mb-1">Inicio</label>
+                                        <input 
+                                            type="time" 
+                                            className="w-full rounded border-gray-300 text-sm p-1 border"
+                                            value={editStartTime}
+                                            onChange={(e) => setEditStartTime(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <label className="block text-xs font-bold text-gray-500 mb-1">Fin</label>
+                                        <input 
+                                            type="time" 
+                                            className="w-full rounded border-gray-300 text-sm p-1 border"
+                                            value={editEndTime}
+                                            onChange={(e) => setEditEndTime(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                    <ITButton 
+                                        label="Cancelar" 
+                                        variant="outlined" 
+                                        size="small"
+                                        color="secondary" 
+                                        onClick={() => setIsEditingTime(false)} 
+                                    />
+                                    <ITButton 
+                                        label="Guardar" 
+                                        size="small"
+                                        color="primary" 
+                                        onClick={async () => {
+                                            if (!selectedEvent || !editStartTime || !editEndTime) return;
+                                            
+                                            // Construct new Date objects preserving the original date
+                                            const baseDate = new Date(selectedEvent.start);
+                                            const [startHour, startMinute] = editStartTime.split(':').map(Number);
+                                            const [endHour, endMinute] = editEndTime.split(':').map(Number);
+                                            
+                                            const newStart = new Date(baseDate);
+                                            newStart.setHours(startHour, startMinute, 0, 0);
+                                            
+                                            const newEnd = new Date(baseDate);
+                                            newEnd.setHours(endHour, endMinute, 0, 0);
+                                            
+                                            if (newEnd <= newStart) {
+                                                dispatch(showToast({ type: "warning", message: "La hora de fin debe ser posterior a la de inicio" }));
+                                                return;
+                                            }
+
+                                            setLoading(true);
+                                            try {
+                                                await updateDaySchedule(Number(selectedEvent.id), {
+                                                    startTime: newStart,
+                                                    endTime: newEnd
+                                                });
+                                                dispatch(showToast({ type: "success", message: "Horario actualizado" }));
+                                                setIsEditingTime(false);
+                                                
+                                                const schedulesRes = await getAllDaySchedules();
+                                                if (schedulesRes.data) {
+                                                    setDaySchedules(schedulesRes.data);
+                                                    // Update selected event data locally
+                                                    const updatedSchedule = schedulesRes.data.find((s: any) => String(s.id) === selectedEvent.id);
+                                                    if (updatedSchedule) {
+                                                        setSelectedEvent({
+                                                            ...selectedEvent,
+                                                            start: new Date(updatedSchedule.startTime),
+                                                            end: new Date(updatedSchedule.endTime),
+                                                            data: updatedSchedule
+                                                        });
+                                                    }
+                                                }
+                                            } catch (error: any) {
+                                                console.error("Error updating schedule time:", error);
+                                                dispatch(showToast({ type: "error", message: error?.message || "Error al actualizar horario" }));
+                                            } finally {
+                                                setLoading(false);
+                                            }
+                                        }} 
+                                    />
+                                </div>
+                            </div>
+                        )}
+                        {selectedEvent?.data?.coach && !isEditingCoach && (
+                            <div className="flex items-center justify-between">
+                                <p className="text-gray-700 font-medium">
+                                    Entrenador: {selectedEvent.data.coach.name} {selectedEvent.data.coach.lastName}
+                                </p>
+                                {user?.role === "ADMIN" && (
+                                    <button 
+                                        onClick={() => setIsEditingCoach(true)}
+                                        className="text-blue-600 hover:text-blue-800 text-xs font-semibold underline"
+                                    >
+                                        Editar
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        {isEditingCoach && (
+                            <div className="bg-white p-2 rounded border border-blue-200 mt-2">
+                                <ITSelect
+                                    label="Cambiar Entrenador"
+                                    name="editCoachId"
+                                    options={coaches.map(c => ({ label: `${c.name} ${c.lastName}`, value: String(c.id) }))}
+                                    value={selectedCoachId}
+                                    onChange={(e) => setSelectedCoachId(e.target.value)}
+                                />
+                                <div className="flex justify-end gap-2 mt-2">
+                                    <ITButton 
+                                        label="Cancelar" 
+                                        variant="outlined" 
+                                        size="small"
+                                        color="secondary" 
+                                        onClick={() => setIsEditingCoach(false)} 
+                                    />
+                                    <ITButton 
+                                        label="Guardar" 
+                                        size="small"
+                                        color="primary" 
+                                        onClick={async () => {
+                                            if (!selectedEvent || !selectedCoachId) return;
+                                            setLoading(true);
+                                            try {
+                                                await updateDaySchedule(Number(selectedEvent.id), {
+                                                    coachId: Number(selectedCoachId)
+                                                });
+                                                dispatch(showToast({ type: "success", message: "Entrenador actualizado" }));
+                                                setIsEditingCoach(false);
+                                                
+                                                const schedulesRes = await getAllDaySchedules();
+                                                if (schedulesRes.data) {
+                                                    setDaySchedules(schedulesRes.data);
+                                                    // Update selected event data locally to reflect change immediately in modal
+                                                    const updatedSchedule = schedulesRes.data.find((s: any) => String(s.id) === selectedEvent.id);
+                                                    if (updatedSchedule) {
+                                                        setSelectedEvent({
+                                                            ...selectedEvent,
+                                                            data: updatedSchedule
+                                                        });
+                                                    }
+                                                }
+                                            } catch (error: any) {
+                                                console.error("Error updating coach:", error);
+                                                dispatch(showToast({ type: "error", message: error?.message || "Error al actualizar" }));
+                                            } finally {
+                                                setLoading(false);
+                                            }
+                                        }} 
+                                    />
+                                </div>
+                            </div>
                         )}
                     </div>
                     
@@ -353,7 +564,11 @@ const CalendarPage = () => {
                                     <ul className="text-sm space-y-2 mt-2">
                                         {visibleAppointments.map((appt: any) => (
                                             <li key={appt.id} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                                                <span>- {appt.child?.name} {appt.child?.lastName}</span>
+                                                <span>
+                                                    - {appt.child 
+                                                        ? `${appt.child.name} ${appt.child.lastName}` 
+                                                        : `${appt.user?.name || ''} ${appt.user?.lastName || ''} (Usuario)`}
+                                                </span>
                                                 <div className="flex gap-2">
                                                     {isCoach && (
                                                         <ITButton 
@@ -387,14 +602,45 @@ const CalendarPage = () => {
                     {/* ONLY SHOW ENROLLMENT INPUT IF NOT COACH */}
                     {user?.role !== "COACH" && (
                         <>
-                            <ITSelect
-                                label={user?.role === "ADMIN" ? "Inscribir Alumno" : "Seleccionar Hijo"}
-                                name="childId"
-                                options={children.map(c => ({ label: `${c.name} ${c.lastName}`, value: String(c.id) }))}
-                                value={selectedChildId}
-                                onChange={(e) => setSelectedChildId(e.target.value)}
-                                placeholder="-- Seleccione --"
-                            />
+                            <div className="flex gap-4 mb-4 bg-gray-50 p-2 rounded-lg justify-center">
+                                <label className={`flex items-center gap-2 cursor-pointer px-3 py-1 rounded-md transition-colors ${enrollmentType === 'child' ? 'bg-white shadow-sm text-indigo-600 font-medium' : 'text-gray-500'}`}>
+                                    <input 
+                                        type="radio" 
+                                        name="enrollmentType"
+                                        checked={enrollmentType === 'child'}
+                                        onChange={() => setEnrollmentType('child')}
+                                        className="hidden"
+                                    />
+                                    <span>Inscribir Hijo(a)</span>
+                                </label>
+                                <label className={`flex items-center gap-2 cursor-pointer px-3 py-1 rounded-md transition-colors ${enrollmentType === 'self' ? 'bg-white shadow-sm text-indigo-600 font-medium' : 'text-gray-500'}`}>
+                                    <input 
+                                        type="radio" 
+                                        name="enrollmentType" 
+                                        checked={enrollmentType === 'self'}
+                                        onChange={() => setEnrollmentType('self')}
+                                        className="hidden"
+                                    />
+                                    <span>Inscribirme a mí (Usuario)</span>
+                                </label>
+                            </div>
+
+                            {enrollmentType === 'child' ? (
+                                <ITSelect
+                                    label={user?.role === "ADMIN" ? "Inscribir Alumno" : "Seleccionar Hijo"}
+                                    name="childId"
+                                    options={children.map(c => ({ label: `${c.name} ${c.lastName}`, value: String(c.id) }))}
+                                    value={selectedChildId}
+                                    onChange={(e) => setSelectedChildId(e.target.value)}
+                                    placeholder="-- Seleccione --"
+                                />
+                            ) : (
+                                <div className="bg-indigo-50 border border-indigo-100 p-3 rounded-lg text-center">
+                                    <p className="text-sm text-indigo-800">
+                                        Te inscribirás como: <span className="font-bold block text-base mt-1">{user?.name}</span>
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="flex justify-between pt-4 gap-2">
                                 {user?.role === "ADMIN" && (
@@ -406,7 +652,7 @@ const CalendarPage = () => {
                                         onClick={handleDelete} 
                                     />
                                 )}
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 ml-auto">
                                     <ITButton 
                                         label="Cancelar" 
                                         variant="outlined" 
@@ -417,7 +663,7 @@ const CalendarPage = () => {
                                         label="Inscribir" 
                                         color="primary" 
                                         onClick={handleAssign}
-                                        disabled={!selectedChildId}
+                                        disabled={enrollmentType === 'child' && !selectedChildId}
                                     />
                                 </div>
                             </div>

@@ -204,8 +204,13 @@ const POSPage = () => {
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Punto de Venta</h1>
-          <p className="text-sm text-gray-500">
-            {settings?.businessName} • Turno Activo: {activeSession.id}
+          <p className="text-sm text-gray-500 flex items-center gap-2">
+            <span>{settings?.businessName} • Turno {activeSession.id}</span>
+            {activeSession.user && (
+              <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                Abierto por {activeSession.user.name}
+              </span>
+            )}
           </p>
         </div>
         <div>

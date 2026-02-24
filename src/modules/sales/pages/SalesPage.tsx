@@ -1,12 +1,12 @@
+import { showToast } from "@app/core/store/toast/toast.slice";
 import { ITButton, ITInput } from "@axzydev/axzy_ui_system";
 import dayjs from "dayjs";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaFileInvoiceDollar, FaSearch } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { getSales, SaleModel } from "../../pos/services/SalesService";
 import { SaleDetailModal } from "../components/SaleDetailModal";
 import { SalesTable } from "../components/SalesTable";
-import { showToast } from "@app/core/store/toast/toast.slice";
 
 const SalesPage = () => {
   const dispatch = useDispatch();
@@ -87,7 +87,6 @@ const SalesPage = () => {
                 <ITInput
                   name="startDate"
                   label="Fecha Inicio (Desde)"
-                  type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   onBlur={() => {}}
@@ -97,7 +96,6 @@ const SalesPage = () => {
                 <ITInput
                   name="endDate"
                   label="Fecha Fin (Hasta)"
-                  type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   onBlur={() => {}}
@@ -140,7 +138,6 @@ const SalesPage = () => {
                <SalesTable 
                   data={sales} 
                   onViewDetails={setSelectedSale} 
-                  isLoading={loading} 
                />
             </div>
         )}

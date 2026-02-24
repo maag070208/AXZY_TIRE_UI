@@ -6,10 +6,9 @@ import { SaleModel } from "../../pos/services/SalesService";
 interface SalesTableProps {
   data: SaleModel[];
   onViewDetails: (sale: SaleModel) => void;
-  isLoading?: boolean;
 }
 
-export const SalesTable = ({ data, onViewDetails, isLoading }: SalesTableProps) => {
+export const SalesTable = ({ data, onViewDetails }: SalesTableProps) => {
 
   const getPaymentColor = (method: string) => {
     switch (method) {

@@ -88,10 +88,8 @@ export const ServicesTable = ({ data, onEdit, onDelete }: ServicesTableProps) =>
     <div className="bg-white rounded-lg shadow h-full flex flex-col pt-4">
       <div className="flex-1 overflow-auto">
         <ITTable
-          columns={columns}
-          data={data}
-          pagination={true}
-          rowsPerPage={10}
+          columns={columns as any}
+          data={data as any}
         />
       </div>
     </div>

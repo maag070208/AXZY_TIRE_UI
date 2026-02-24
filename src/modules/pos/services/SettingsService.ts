@@ -1,4 +1,4 @@
-import { get, post, put } from "@app/core/axios/axios";
+import { get, put } from "@app/core/axios/axios";
 import { TResult } from "@app/core/types/TResult";
 
 export interface SystemSettings {

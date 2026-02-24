@@ -1,4 +1,4 @@
-import { ITButton, ITLoader } from "@axzydev/axzy_ui_system";
+import { ITLoader } from "@axzydev/axzy_ui_system";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 

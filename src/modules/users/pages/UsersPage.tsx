@@ -1,26 +1,16 @@
-import { ITButton, ITDialog, ITLoader, ITTable } from "@axzydev/axzy_ui_system";
-import { useCallback, useEffect, useState } from "react";
-import {
-  FaFilter,
-  FaPencilAlt,
-  FaSearch,
-  FaTrash,
-  FaUserShield,
-  FaUserTie,
-  FaWrench,
-  FaRegEye,
-} from "react-icons/fa";
-import { useDispatch } from "react-redux";
 import { showToast } from "@app/core/store/toast/toast.slice";
+import { ITButton, ITDialog } from "@axzydev/axzy_ui_system";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import UserForm from "../components/UserForm";
+import { UsersTable } from "../components/UsersTable";
 import {
   createUser,
   deleteUser,
   getAllUsers,
   updateUser,
 } from "../services/UserService";
-import { User, UserRole } from "../types/user.types";
-import { UsersTable } from "../components/UsersTable";
+import { User } from "../types/user.types";
 
 const UsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);

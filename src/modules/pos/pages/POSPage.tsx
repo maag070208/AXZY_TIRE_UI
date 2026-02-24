@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { FaCashRegister } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { CashRegisterModal } from "../components/CashRegisterModal";
+import { CloseRegisterModal } from "../components/CloseRegisterModal";
 import {
   CashRegisterSession,
   getActiveSession,
@@ -26,6 +27,8 @@ const POSPage = () => {
     null
   );
   const [showOpenRegisterModal, setShowOpenRegisterModal] = useState(false);
+  const [showCloseRegisterModal, setShowCloseRegisterModal] = useState(false);
+  
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [checkoutCart, setCheckoutCart] = useState<any[]>([]);
   const [checkoutTotal, setCheckoutTotal] = useState(0);
@@ -45,9 +48,14 @@ const POSPage = () => {
       if (sessionRes?.data) setActiveSession(sessionRes.data);
     } catch (error) {
       console.error("Error fetching POS startup data", error);
-      dispatch(
-        showToast({ message: "Error al cargar configuración", type: "error" })
-      );
+      // Only show error if it's not a 404 (no active session is a 404 in some APIs, or just null)
+      if ((error as any)?.response?.status !== 404) {
+          dispatch(
+            showToast({ message: "Error al cargar configuración", type: "error" })
+          );
+      } else {
+          setActiveSession(null); // Explicitly set to null if 404
+      }
     } finally {
       setLoading(false);
     }
@@ -133,7 +141,7 @@ const POSPage = () => {
         sessionId: activeSession.id,
         subtotal: checkoutTotal,
         discount: 0,
-        taxes: 0, // Placeholder for taxes if they want to implement later
+        taxes: 0,
         total: checkoutTotal,
         paymentMethod,
         tires,
@@ -150,7 +158,6 @@ const POSPage = () => {
       );
       setIsCheckoutOpen(false);
       
-      // Clear cart visually
       if (clearCartFn) clearCartFn();
 
       const saleId = res.data?.id || 0;
@@ -162,7 +169,6 @@ const POSPage = () => {
         subtotal: c.subtotal
       }));
 
-      // Imprimir el ticket automáticamente
       printComponent(
          <TicketTemplate
             folio={saleId}
@@ -178,7 +184,6 @@ const POSPage = () => {
          `Ticket_Venta_${saleId}`
       );
       
-      // We will reload the activeSession stats to update cash bounds
       fetchData();
     } catch (error: any) {
       dispatch(
@@ -192,6 +197,8 @@ const POSPage = () => {
     }
   };
 
+  const expectedAmount = Number(activeSession.initialAmount) + Number(activeSession.totalSales);
+
   return (
     <div className="flex flex-col h-full bg-gray-100">
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
@@ -204,10 +211,15 @@ const POSPage = () => {
         <div>
            <div className="flex gap-4 items-center">
              <div className="text-right hidden sm:block">
-               <span className="text-xs text-gray-500 block">Ventas de Turno</span>
-               <span className="font-semibold text-green-600">${activeSession.totalSales.toFixed(2)}</span>
+               <span className="text-xs text-gray-500 block">Fondo + Ventas</span>
+               <span className="font-semibold text-green-600">${expectedAmount.toFixed(2)}</span>
              </div>
-             <ITButton label="Corte de Caja" color="danger" variant="outlined" />
+             <ITButton 
+               label="Corte de Caja" 
+               color="danger" 
+               variant="outlined" 
+               onClick={() => setShowCloseRegisterModal(true)}
+             />
            </div>
         </div>
       </div>
@@ -220,6 +232,17 @@ const POSPage = () => {
         total={checkoutTotal}
         onConfirm={handleConfirmSale}
         isProcessing={isProcessingSale}
+      />
+
+      {/* Close Register Modal */}
+      <CloseRegisterModal
+        isOpen={showCloseRegisterModal}
+        onClose={() => setShowCloseRegisterModal(false)}
+        activeSession={activeSession}
+        onSuccess={() => {
+           setActiveSession(null);
+           fetchData();
+        }}
       />
     </div>
   );

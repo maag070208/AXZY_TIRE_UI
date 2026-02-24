@@ -75,6 +75,23 @@ export const useNavigationItems = (): any[] => {
         isActive: isRouteActive("/services"),
       }
     );
+  } else if (user?.role === "CAJERO") {
+    baseItems.push(
+      {
+        id: "pos",
+        label: "Punto de Venta",
+        action: () => navigate("/pos"),
+        icon: <FaCashRegister />,
+        isActive: isRouteActive("/pos"),
+      },
+      {
+        id: "sales",
+        label: "Historial Ventas",
+        action: () => navigate("/sales"),
+        icon: <FaMoneyCheckAlt />,
+        isActive: isRouteActive("/sales"),
+      }
+    );
   }
 
   return baseItems;

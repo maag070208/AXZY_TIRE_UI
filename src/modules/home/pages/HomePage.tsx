@@ -58,6 +58,21 @@ const HomePage = () => {
               action: () => navigate("/services"),
             }
         );
+    } else if (user.role === "CAJERO") {
+       cards.push(
+            {
+              title: "Punto de Venta",
+              description: "Procesar ventas, generar cotizaciones y atender clientes",
+              icon: <FaCashRegister />,
+              action: () => navigate("/pos"),
+            },
+            {
+              title: "Historial Ventas",
+              description: "Consulta las transacciones y tickets anteriores",
+              icon: <FaMoneyCheckAlt />,
+              action: () => navigate("/sales"),
+            }
+       );
     }
     
     setHomeCardItem(cards);

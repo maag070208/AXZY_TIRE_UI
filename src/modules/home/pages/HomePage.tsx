@@ -71,6 +71,12 @@ const HomePage = () => {
               description: "Consulta las transacciones y tickets anteriores",
               icon: <FaMoneyCheckAlt />,
               action: () => navigate("/sales"),
+            },
+            {
+              title: "Inventario Llantas",
+              description: "Registra y consulta el catálogo de llantas nuevas y usadas",
+              icon: <FaCompactDisc />,
+              action: () => navigate("/tires"),
             }
        );
     }

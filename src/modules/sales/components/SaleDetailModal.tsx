@@ -105,7 +105,7 @@ export const SaleDetailModal = ({
 
   return (
     <ITDialog isOpen={isOpen} onClose={onClose} title={`Detalle de Venta #${sale.id}`}>
-      <div className="flex flex-col gap-6 w-full lg:min-w-[800px]">
+      <div className="flex flex-col gap-6 w-full lg:min-w-[800px] max-h-[75vh] overflow-y-auto pr-2">
          
          <div className="flex justify-between items-start bg-gray-50 p-4 rounded-lg border border-gray-100">
              <div>

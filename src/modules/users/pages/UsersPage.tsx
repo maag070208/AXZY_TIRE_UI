@@ -22,11 +22,10 @@ const UsersPage = () => {
 
   const dispatch = useDispatch();
 
-  const fetchUsers = useCallback(async () => {
+const fetchUsers = useCallback(async () => {
     try {
       const res = await getAllUsers();
       if (res?.data) {
-        console.log(res);
         setUsers(res.data);
       }
     } catch (error) {

@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { showToast } from "@app/core/store/toast/toast.slice";
 import LocationForm from "../components/LocationForm";
 import { LocationsTable } from "../components/LocationsTable";
+import { LocationTiresModal } from "../components/LocationTiresModal";
 import {
   createLocation,
   deleteLocation,
@@ -19,6 +20,10 @@ const LocationsPage = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // For Tires View Modal
+  const [showTiresModal, setShowTiresModal] = useState(false);
+  const [viewTiresLocation, setViewTiresLocation] = useState<Location | null>(null);
 
   const dispatch = useDispatch();
 
@@ -98,6 +103,10 @@ const LocationsPage = () => {
         ) : (
             <LocationsTable 
                 data={locations} 
+                onViewTires={(row: Location) => {
+                    setViewTiresLocation(row);
+                    setShowTiresModal(true);
+                }}
                 onEdit={(row: Location) => {
                     setSelectedLocation(row);
                     setShowFormModal(true);
@@ -151,6 +160,17 @@ const LocationsPage = () => {
           </div>
         </div>
       </ITDialog>
+
+      {/* View Tires Modal */}
+      <LocationTiresModal 
+        isOpen={showTiresModal} 
+        onClose={() => {
+           setShowTiresModal(false);
+           setViewTiresLocation(null);
+        }} 
+        locationId={viewTiresLocation?.id}
+        locationName={viewTiresLocation?.name}
+      />
     </div>
   );
 };

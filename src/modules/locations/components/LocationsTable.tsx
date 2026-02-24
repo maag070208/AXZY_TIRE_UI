@@ -1,14 +1,15 @@
 import { ITBadget, ITButton, ITTable } from "@axzydev/axzy_ui_system";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 
 
 interface LocationsTableProps {
   data: any[];
+  onViewTires: (row: any) => void;
   onEdit: (row: any) => void;
   onDelete: (row: any) => void;
 }
 
-export const LocationsTable = ({ data, onEdit, onDelete }: LocationsTableProps) => {
+export const LocationsTable = ({ data, onViewTires, onEdit, onDelete }: LocationsTableProps) => {
   return (
     <ITTable
       columns={[
@@ -54,6 +55,14 @@ export const LocationsTable = ({ data, onEdit, onDelete }: LocationsTableProps) 
           type: "actions",
           render: (row: any) => (
              <div className="flex gap-2">
+                          <ITButton
+                            ariaLabel="Ver Llantas"
+                            color="primary"
+                            variant="icon-only"
+                            onClick={() => onViewTires(row)}
+                          >
+                            <FaEye />
+                          </ITButton>
                           <ITButton
                             ariaLabel="Editar"
                             color="secondary"

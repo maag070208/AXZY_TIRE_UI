@@ -90,6 +90,13 @@ export const useNavigationItems = (): any[] => {
         action: () => navigate("/sales"),
         icon: <FaMoneyCheckAlt />,
         isActive: isRouteActive("/sales"),
+      },
+      {
+        id: "tires",
+        label: "Llantas",
+        action: () => navigate("/tires"),
+        icon: <FaCompactDisc />,
+        isActive: isRouteActive("/tires"),
       }
     );
   }

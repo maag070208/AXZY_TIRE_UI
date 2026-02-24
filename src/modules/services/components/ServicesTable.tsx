@@ -11,13 +11,6 @@ interface ServicesTableProps {
 export const ServicesTable = ({ data, onEdit, onDelete }: ServicesTableProps) => {
   const columns = [
     {
-      key: "id",
-      label: "ID",
-      type: "number",
-      filter: true,
-      sort: true,
-    },
-    {
       key: "name",
       label: "Nombre",
       type: "text",
@@ -85,13 +78,9 @@ export const ServicesTable = ({ data, onEdit, onDelete }: ServicesTableProps) =>
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow h-full flex flex-col pt-4">
-      <div className="flex-1 overflow-auto">
         <ITTable
           columns={columns as any}
           data={data as any}
         />
-      </div>
-    </div>
   );
 };

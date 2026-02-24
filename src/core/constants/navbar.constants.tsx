@@ -1,16 +1,6 @@
 import { AppState } from "@app/core/store/store";
 import LOGO from "@assets/logo.png";
-import {
-  FaBell,
-  FaCalendarAlt,
-  FaChild,
-  FaClock,
-  FaDumbbell,
-  FaHome,
-  FaListAlt,
-  FaUsers,
-  FaMoneyBillWave,
-} from "react-icons/fa";
+import { FaHome, FaUsers, FaMapMarkerAlt, FaCompactDisc, FaWrench, FaCashRegister, FaMoneyCheckAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -35,74 +25,55 @@ export const useNavigationItems = (): any[] => {
       id: "home",
       label: "Inicio",
       action: () => navigate("/home"),
-      isActive: isRouteActive("/home") || isRouteActive("/home"),
-      icon: <FaHome className="text-white" />,
-    },
-    {
-      id: "children",
-      label: user.role === "ADMIN" ? "Alumnos" : "Hijos",
-      action: () => navigate("/children"),
-      isActive: isRouteActive("/children"),
-      icon: <FaChild className="text-white" />,
-    },
-    {
-      id: "appointments",
-      label: "Citas",
-      action: () => navigate("/appointments"),
-      icon: <FaListAlt className="text-white" />,
-      isActive: isRouteActive("/appointments"),
-    },
-    {
-      id: "calendar",
-      label: "Calendario",
-      action: () => navigate("/calendar"),
-      isActive: isRouteActive("/calendar"),
-      icon: <FaCalendarAlt className="text-white" />,
-    },
-  ].filter(item => {
-    if (user?.role === "COACH" && item.id === "children") {
-        return false;
+      isActive: isRouteActive("/home"),
+      icon: <FaHome />,
     }
-    return true;
-  });
+  ];
 
-  if (user?.role === "ADMIN") {
+  if (user?.role === "ADMIN" || user?.role === "SUPERVISOR") {
     baseItems.push(
       {
-        id: "day-schedule",
-        label: "Horarios",
-        action: () => navigate("/day-schedule"),
-        isActive: isRouteActive("/day-schedule"),
-        icon: <FaClock className="text-white" />,
+        id: "pos",
+        label: "Punto de Venta",
+        action: () => navigate("/pos"),
+        icon: <FaCashRegister />,
+        isActive: isRouteActive("/pos"),
       },
       {
-        id: "training-modes",
-        label: "Modos de Entrenamiento",
-        action: () => navigate("/training-modes"),
-        icon: <FaDumbbell className="text-white" />,
-        isActive: isRouteActive("/training-modes"),
-      },
-      {
-        id: "payments",
-        label: "Pagos",
-        action: () => navigate("/payments"),
-        icon: <FaMoneyBillWave className="text-white" />,
-        isActive: isRouteActive("/payments"),
+        id: "sales",
+        label: "Historial Ventas",
+        action: () => navigate("/sales"),
+        icon: <FaMoneyCheckAlt />,
+        isActive: isRouteActive("/sales"),
       },
       {
         id: "users",
         label: "Usuarios",
         action: () => navigate("/users"),
-        icon: <FaUsers className="text-white" />,
+        icon: <FaUsers />,
         isActive: isRouteActive("/users"),
       },
       {
-        id: "notifications",
-        label: "Notificaciones",
-        action: () => navigate("/notifications"),
-        icon: <FaBell className="text-white" />,
-        isActive: isRouteActive("/notifications"),
+        id: "locations",
+        label: "Ubicaciones",
+        action: () => navigate("/locations"),
+        icon: <FaMapMarkerAlt />,
+        isActive: isRouteActive("/locations"),
       },
+      {
+        id: "tires",
+        label: "Llantas",
+        action: () => navigate("/tires"),
+        icon: <FaCompactDisc />,
+        isActive: isRouteActive("/tires"),
+      },
+      {
+        id: "services",
+        label: "Servicios",
+        action: () => navigate("/services"),
+        icon: <FaWrench />,
+        isActive: isRouteActive("/services"),
+      }
     );
   }
 
@@ -133,9 +104,9 @@ export const Navbar = () => {
 };
 
 export const NAVBAR_LOGO = () => (
-  <img src={LOGO} className="h-[100px] hidden md:flex" />
+  <img src={LOGO} className="h-[180px] hidden md:flex" />
 );
 
 export const SIDEBAR_LOGO = () => (
-  <img src={LOGO} className="mt-5 h-[100px] flex md:hidden" />
+  <img src={LOGO} className="mt-5 h-[180px] flex md:hidden" />
 );

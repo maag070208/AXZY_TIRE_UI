@@ -4,7 +4,7 @@ import { decodeToken, isExpired } from "react-jwt";
 interface AuthState {
   id: number | null;
   name: string | null;
-  email: string | null;
+  username: string | null;
   role: string | null;
   token: string | null;
 }
@@ -12,7 +12,7 @@ interface AuthState {
 const initialState: AuthState = {
   id: null,
   name: null,
-  email: null,
+  username: null,
   role: null,
   token: null,
 };
@@ -31,7 +31,7 @@ const authSlice = createSlice({
       if (!decoded || expired) {
         state.id = null;
         state.name = null;
-        state.email = null;
+        state.username = null;
         state.role = null;
         state.token = null;
         return;
@@ -40,7 +40,7 @@ const authSlice = createSlice({
       // ✅ JWT simple y directo
       state.id = decoded.id ?? null;
       state.name = decoded.name ?? "Usuario";
-      state.email = decoded.email ?? null;
+      state.username = decoded.username ?? null;
       state.role = decoded.role ?? null;
       state.token = token;
     },
@@ -48,7 +48,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.id = null;
       state.name = null;
-      state.email = null;
+      state.username = null;
       state.role = null;
       state.token = null;
     },

@@ -4,7 +4,7 @@ import {
   FieldConfig,
   ITButton,
   ITFormBuilder,
-} from "axzy_ui_system";
+} from "@axzydev/axzy_ui_system";
 import { Form, Formik } from "formik";
 
 import { useState } from "react";
@@ -17,7 +17,7 @@ const LoginFormComponent = ({
   onSubmit: (values: IAuthLogin) => void;
 }) => {
   const initialValues = {
-    email: "",
+    username: "",
     password: "",
   };
 
@@ -25,16 +25,15 @@ const LoginFormComponent = ({
 
   const fields: FieldConfig[] = [
     {
-      name: "email",
-      label: "Email",
+      name: "username",
+      label: "Usuario",
       type: "text",
       required: true,
       column: 12,
       minLength: 3,
       maxLength: 100,
       validation: Yup.string()
-        .required("Este campo es requerido")
-        .email("Ingrese un email válido"),
+        .required("Este campo es requerido"),
       rightIcon: <FaUserAlt />,
     },
     {

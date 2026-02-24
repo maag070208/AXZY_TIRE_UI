@@ -1,6 +1,6 @@
 import { AppState } from "@app/core/store/store";
 import { useEffect, useState } from "react";
-import { FaCalendarAlt, FaChild, FaClock, FaDumbbell, FaListAlt, FaUsers } from "react-icons/fa";
+import { FaUsers, FaCompactDisc, FaWrench, FaCashRegister, FaMoneyCheckAlt, FaMapMarkerAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { HomeCardItem } from "../components/HomeCardItem";
@@ -17,52 +17,51 @@ const HomePage = () => {
       return;
     }
 
-    const cards = [
-      {
-        title: user.role === "ADMIN" ? "Alumnos" : "Hijos",
-        description: user.role === "ADMIN" ? "Administra los alumnos registrados" : "Administra los hijos registrados del usuario",
-        icon: <FaChild />,
-        action: () => navigate("/children"),
-      },
-      {
-        title: "Citas",
-        description: "Consulta y gestiona tus citas activas",
-        icon: <FaListAlt />,
-        action: () => navigate("/appointments"),
-      },
-      {
-        title: "Calendario",
-        description: "Consulta los horarios de entrenamiento",
-        icon: <FaCalendarAlt />,
-        action: () => navigate("/calendar"),
-      },
-    ];
+    const cards = [];
 
-    if (user.role === "ADMIN") {
+    if (user.role === "ADMIN" || user.role === "SUPERVISOR") {
         cards.push(
             {
-              title: "Horarios",
-              description: "Consulta los horarios por día, semana o disponibilidad",
-              icon: <FaClock />,
-              action: () => navigate("/day-schedule"),
+              title: "Punto de Venta",
+              description: "Procesar ventas, generar cotizaciones y atender clientes",
+              icon: <FaCashRegister />,
+              action: () => navigate("/pos"),
             },
             {
-              title: "Modos de Entrenamiento",
-              description: "Administra los diferentes modos de entrenamiento",
-              icon: <FaDumbbell />,
-              action: () => navigate("/training-modes"),
+              title: "Historial Ventas",
+              description: "Consulta las transacciones y tickets anteriores",
+              icon: <FaMoneyCheckAlt />,
+              action: () => navigate("/sales"),
             },
             {
               title: "Usuarios",
-              description: "Administra los usuarios del sistema (Admins, Coaches, Usuarios)",
+              description: "Administra los usuarios del sistema (Cajeros, Técnicos, Supervisores)",
               icon: <FaUsers />,
               action: () => navigate("/users"),
             },
+            {
+              title: "Ubicaciones",
+              description: "Administra las sucursales y puntos de almacenamiento",
+              icon: <FaMapMarkerAlt />,
+              action: () => navigate("/locations"),
+            },
+            {
+              title: "Inventario Llantas",
+              description: "Registra y consulta el catálogo de llantas nuevas y usadas",
+              icon: <FaCompactDisc />,
+              action: () => navigate("/tires"),
+            },
+            {
+              title: "Catálogo de Servicios",
+              description: "Administra reparaciones, mantenimiento y otros servicios aplicables",
+              icon: <FaWrench />,
+              action: () => navigate("/services"),
+            }
         );
     }
     
     setHomeCardItem(cards);
-  }, [user]);
+  }, [user, navigate]);
 
   return (
     <div className="flex flex-col h-full bg-gray-50">

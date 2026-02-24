@@ -1,4 +1,4 @@
-import { ITButton, ITInput, ITSelect } from "axzy_ui_system";
+import { ITButton, ITInput, ITSelect } from "@axzydev/axzy_ui_system";
 import { Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
@@ -7,7 +7,7 @@ import { UserCreate, UserRole } from "../types/user.types";
 const validationSchema = Yup.object({
   name: Yup.string().required("El nombre es requerido"),
   lastName: Yup.string().required("El apellido es requerido"),
-  email: Yup.string().email("Correo inválido").required("El correo es requerido"),
+  username: Yup.string().required("El nombre de usuario es requerido"),
   role: Yup.string().required("El rol es requerido"),
   password: Yup.string().when("isEditing", {
     is: false,
@@ -27,17 +27,18 @@ interface UserFormProps {
 
 const roles = [
   { id: UserRole.ADMIN, name: "Administrador" },
-  { id: UserRole.COACH, name: "Entrenador" },
-  { id: UserRole.USER, name: "Usuario Normal" },
+  { id: UserRole.CAJERO, name: "Cajero/Ventas" },
+  { id: UserRole.TECNICO, name: "Técnico" },
+  { id: UserRole.SUPERVISOR, name: "Supervisor" },
 ];
 
 const UserForm = ({ initialValues, onSubmit, isLoading }: UserFormProps) => {
   const defaultValues = {
     name: "",
     lastName: "",
-    email: "",
+    username: "",
     password: "",
-    role: UserRole.USER,
+    role: UserRole.CAJERO,
     isEditing: false,
   };
 
@@ -48,9 +49,9 @@ const UserForm = ({ initialValues, onSubmit, isLoading }: UserFormProps) => {
       setFormValues({
         name: initialValues.name || "",
         lastName: initialValues.lastName || "",
-        email: initialValues.email || "",
+        username: initialValues.username || "",
         password: "", // Don't populate password on edit
-        role: initialValues.role || UserRole.USER,
+        role: initialValues.role || UserRole.CAJERO,
         isEditing: true,
       });
     }
@@ -93,13 +94,13 @@ const UserForm = ({ initialValues, onSubmit, isLoading }: UserFormProps) => {
             required
           />
           <ITInput
-            name="email"
-            label="Correo Electrónico"
-            value={values.email}
+            name="username"
+            label="Nombre de Usuario"
+            value={values.username}
             onChange={handleChange}
             onBlur={handleBlur}
-            error={errors.email as string}
-            touched={touched.email as boolean}
+            error={errors.username as string}
+            touched={touched.username as boolean}
             required
           />
           

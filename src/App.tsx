@@ -1,26 +1,21 @@
 import LoginPage from "@app/modules/auth/pages/LoginPage";
 import RegisterPage from "@app/modules/auth/pages/RegisterPage";
-import { ITLoader } from "axzy_ui_system";
-import { useEffect, useState } from "react"; // <--- Importa useState
+import { ITLoader } from "@axzydev/axzy_ui_system";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { PrivateRoutes } from "./core/routes/PrivateRoutes";
 import { setAuth } from "./core/store/auth/auth.slice";
 import HomePage from "./modules/home/pages/HomePage";
-import TrainingModePage from "./modules/traningMode/pages/TraningModePage";
-import DaySchedulePage from "./modules/daySchedules/pages/DaySchedulePage";
-import ChildrenPage from "./modules/children/pages/ChildrenPage";
-import AppointmentsPage from "./modules/appointments/pages/AppointmentsPage";
-import CalendarPage from "./modules/calendar/pages/CalendarPage";
-import PaymentsPage from "./modules/payments/pages/PaymentsPage";
-import EvaluationFormPage from "./modules/evaluations/pages/EvaluationFormPage";
-import NotificationsPage from "./modules/notifications/pages/NotificationsPage";
 import UsersPage from "./modules/users/pages/UsersPage";
-
+import LocationsPage from "./modules/locations/pages/LocationsPage";
+import TiresPage from "./modules/tires/pages/TiresPage";
+import ServicesPage from "./modules/services/pages/ServicesPage";
+import POSPage from "./modules/pos/pages/POSPage";
+import SalesPage from "./modules/sales/pages/SalesPage";
 
 function App() {
-  // Force HMR update
   const token = useSelector((state: any) => state.auth.token);
   const dispatch = useDispatch();
 
@@ -39,17 +34,14 @@ function App() {
     localStorage.setItem("token", token);
   };
 
-  // 2. Modifica el useEffect para usar el estado de listo
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken && storedToken !== "null") {
       dispatch(setAuth(storedToken));
     }
-    // Marca la aplicación como lista después de la verificación
     setIsAppReady(true);
   }, [dispatch]);
 
-  // 3. Si la aplicación no está lista, no renderices nada (o un loader)
   if (!isAppReady) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
@@ -58,7 +50,6 @@ function App() {
     );
   }
 
-  // 4. Si el token no existe en Redux, redirige al login
   if (!token) {
     return (
       <Routes>
@@ -69,22 +60,17 @@ function App() {
     );
   }
 
-  // 5. Si el token existe, renderiza las rutas protegidas
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route element={<PrivateRoutes />}>
         <Route path="/home" element={<HomePage />} />
-        <Route path="/training-modes" element={<TrainingModePage />} />
-        <Route path="/day-schedule" element={<DaySchedulePage />} />
-        <Route path="/children" element={<ChildrenPage />} />
-        <Route path="/appointments" element={<AppointmentsPage />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/payments" element={<PaymentsPage />} />
-        <Route path="/evaluations/new" element={<EvaluationFormPage />} />
-        <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/users" element={<UsersPage />} />
-
+        <Route path="/locations" element={<LocationsPage />} />
+        <Route path="/tires" element={<TiresPage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/pos" element={<POSPage />} />
+        <Route path="/sales" element={<SalesPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
